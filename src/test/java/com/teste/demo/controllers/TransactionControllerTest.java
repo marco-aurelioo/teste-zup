@@ -1,6 +1,8 @@
 package com.teste.demo.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.teste.demo.business.TransactionBusiness;
 import com.teste.demo.model.Error;
 import com.teste.demo.model.Transaction;
@@ -28,8 +30,8 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(ControllerTeste.class)
-class ControllerTesteTest {
+@WebMvcTest(TransactionController.class)
+class TransactionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,8 +48,8 @@ class ControllerTesteTest {
 
     @Test
     public void getComListaOk() throws Exception {
-        Transaction t1 = new Transaction(123,10.1);
-        Transaction t2 = new Transaction(1234,10.2);
+        Transaction t1 = new Transaction(123l,10.1);
+        Transaction t2 = new Transaction(1234l,10.2);
         List<Transaction> transactions = Arrays.asList(new Transaction[]{t1, t2});
         when(transactionBusinessMock.getTransatios(any(Long.class))).thenReturn(transactions);
 
@@ -60,6 +62,47 @@ class ControllerTesteTest {
         String content = mvcResult.getResponse().getContentAsString();
         Transaction[] transaction_response = objectMapper.readValue(content, Transaction[].class);
         assertTrue(transaction_response.length == 2);
+
+    }
+
+
+    @Test
+    public void postCriarTransactionOk() throws Exception {
+        Transaction t1 = new Transaction(123l,10.1);
+        when(transactionBusinessMock.createTransaction(any(Transaction.class))).thenReturn(t1);
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
+        String uri = "/transaction";
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ow.writeValueAsString(t1))
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        Transaction transaction_response = objectMapper.readValue(content, Transaction.class);
+        assertEquals(transaction_response.getTimeStamp(), t1.getTimeStamp());
+        assertEquals(transaction_response.getValue(), t1.getValue());
+
+    }
+
+    @Test
+    public void postCriarTransactionInvalida() throws Exception {
+        Transaction t1 = new Transaction();
+        t1.setTimeStamp(1234l);
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
+        when(transactionBusinessMock.createTransaction(any(Transaction.class))).thenCallRealMethod();
+        String json = ow.writeValueAsString(t1);
+        String uri = "/transaction";
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(400, status);
 
     }
 

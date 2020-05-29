@@ -3,6 +3,7 @@ package com.teste.demo.business;
 import com.teste.demo.model.Transaction;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,10 @@ public class TransactionBusiness {
     }
 
     public List<Transaction> getTransatios(long timeConsult){
-        List<Transaction> transactions = lista.stream().filter(t -> t.getTimeStamp() > timeConsult ).collect(Collectors.toList());
+        List<Transaction> transactions = lista
+                .stream()
+                .filter(t -> t.getTimeStamp() >= timeConsult-60000 )
+                .collect(Collectors.toList());
         this.lista = transactions;
         return transactions;
     }

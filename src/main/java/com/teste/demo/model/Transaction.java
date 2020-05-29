@@ -1,30 +1,39 @@
 package com.teste.demo.model;
 
+
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
+
+@Validated
 public class Transaction {
 
-    private long timeStamp;
-    private double value;
+    @NotNull
+    private Long timeStamp;
+
+    @NotNull
+    private Double value;
 
     public Transaction(){
     }
 
-    public Transaction(long timeStamp, double value){
+    public Transaction(Long timeStamp, Double value){
         this.timeStamp = timeStamp;
         this.value = value;
     }
-    public long getTimeStamp() {
+    public Long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(long timeStamp) {
+    public void setTimeStamp(Long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 }
