@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionBusiness {
@@ -16,8 +17,10 @@ public class TransactionBusiness {
         return t;
     }
 
-    public List<Transaction> getTransatios(){
-        return lista;
+    public List<Transaction> getTransatios(long timeConsult){
+        List<Transaction> transactions = lista.stream().filter(t -> t.getTimeStamp() > timeConsult ).collect(Collectors.toList());
+        this.lista = transactions;
+        return transactions;
     }
 
 }

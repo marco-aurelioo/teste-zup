@@ -31,7 +31,7 @@ public class ControllerTeste {
 
     @GetMapping
     public ResponseEntity<List<Transaction>> getTransaction(){
-        return new ResponseEntity<List<Transaction>>( transactionBusiness.getTransatios(), HttpStatus.OK);
+        return new ResponseEntity<List<Transaction>>( transactionBusiness.getTransatios(System.currentTimeMillis() - 60000), HttpStatus.OK);
     }
 
 }
