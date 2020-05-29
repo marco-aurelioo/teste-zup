@@ -21,10 +21,18 @@ public class TransactionBusiness {
     public List<Transaction> getTransatios(long timeConsult){
         List<Transaction> transactions = lista
                 .stream()
-                .filter(t -> t.getTimeStamp() >= timeConsult-60000 )
+                .filter(t -> t.getTimeStamp() >= timeConsult - 60000 )
                 .collect(Collectors.toList());
-        this.lista = transactions;
         return transactions;
+    }
+
+
+    public void expurgo(long timeConsult){
+        List<Transaction> transactions = lista
+                .stream()
+                .filter(t -> t.getTimeStamp() < timeConsult - 60000 )
+                .collect(Collectors.toList());
+        this.lista.removeAll(transactions);
     }
 
 }
