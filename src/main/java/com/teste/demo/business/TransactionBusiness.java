@@ -1,6 +1,8 @@
 package com.teste.demo.business;
 
 import com.teste.demo.model.Transaction;
+import com.teste.demo.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -11,28 +13,18 @@ import java.util.stream.Collectors;
 @Service
 public class TransactionBusiness {
 
-    List<Transaction> lista = new ArrayList<>();
+    private static int EXPIRE = 60;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public Transaction createTransaction(Transaction t) {
-        lista.add(t);
+        transactionRepository.createTransaction(t,EXPIRE);
         return t;
     }
 
     public List<Transaction> getTransatios(long timeConsult){
-        List<Transaction> transactions = lista
-                .stream()
-                .filter(t -> t.getTimeStamp() >= timeConsult - 60000 )
-                .collect(Collectors.toList());
+        List<Transaction> transactions = transactionRepository.getAllTransactions();
         return transactions;
-    }
-
-
-    public void expurgo(long timeConsult){
-        List<Transaction> transactions = lista
-                .stream()
-                .filter(t -> t.getTimeStamp() < timeConsult - 60000 )
-                .collect(Collectors.toList());
-        this.lista.removeAll(transactions);
     }
 
 }
